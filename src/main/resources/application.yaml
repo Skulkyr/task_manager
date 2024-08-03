@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:3277/taskmanager
+    username: root
+    password: 1234
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show-sql: true
+
+
+jwt:
+  lifetime: 30m
+  secret: 484373bf5de3798f442ce67249d51312e747598a0a8a68bb7bdcda34797c1660990db19b4cabb5bf1f6eddabe72a6ceba54522c48de2d13c1a65266536881544bd173e31da181f88209aecbc7b5c6305f6bca3420c8f63a5e02f82954b9d3fb357c8de7b11e18ba3be31edaa1cc57757afe8d9bebd6962b1217486132b9e3e2196f6aedceeeba49947fe1677a793f81ae095caa5bd69082605ff453fb95e78cc94e0fdf48491c697b177cdf36aa40264b00c5a3bb9690e339fac72751ed859515643b59a9a0d739e66256c516cafa5bf561a976d2f57c6518576e202f63ccfff816e3cb5b4c35a95be25db0b844aca5ed2607f3e32b7418316da5008da3e754e
+
+logging:
+  level:
+    root: WARN
+
+
