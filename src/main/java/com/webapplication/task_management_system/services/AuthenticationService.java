@@ -1,8 +1,8 @@
 package com.webapplication.task_management_system.services;
 
-import com.webapplication.task_management_system.DTO.AuthenticationRequest;
-import com.webapplication.task_management_system.DTO.AuthenticationResponse;
-import com.webapplication.task_management_system.DTO.RegisterRequest;
+import com.webapplication.task_management_system.DTO.user.AuthenticationRequest;
+import com.webapplication.task_management_system.DTO.user.AuthenticationResponse;
+import com.webapplication.task_management_system.DTO.user.RegisterRequest;
 import com.webapplication.task_management_system.entity.user.Role;
 import com.webapplication.task_management_system.entity.user.User;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +32,7 @@ public class AuthenticationService {
                 .build();
 
         User userFromDB = userService.saveUser(user);
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("firstName", user.getFirstName());
-        claims.put("lastName", user.getLastName());
-        String token = tokenService.generateToken(claims, userFromDB);
+        String token = tokenService.generateToken(userFromDB);
         return new AuthenticationResponse(token);
     }
 
@@ -50,12 +45,9 @@ public class AuthenticationService {
                 ));
 
         User user = userService.getByEmail(request.getEmail());
+        String token = tokenService.generateToken(user);
 
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("firstName", user.getFirstName());
-        claims.put("lastName", user.getLastName());
-
-        String token = tokenService.generateToken(claims, user);
         return new AuthenticationResponse(token);
     }
+
 }

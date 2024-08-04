@@ -1,4 +1,4 @@
-package com.webapplication.task_management_system.DTO;
+package com.webapplication.task_management_system.DTO.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
