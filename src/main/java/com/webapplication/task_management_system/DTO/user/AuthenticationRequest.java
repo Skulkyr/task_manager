@@ -15,14 +15,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AuthenticationRequest {
 
-    @NotBlank
-    @Email
+    @NotBlank(message = "Enter Your Email!")
+    @Email(message = "Incorrect email address!")
     private String email;
 
-    @Size(min = 8, message = "Пароль должен содержать не менее 8 символов!")
+    @Size(min = 8, message = "The password must contain at least 8 characters!")
     @Pattern(
             regexp = "^(?=.*[a-zA-Zа-яА-Я])(?=.*[A-ZА-Я])(?=.*[a-zа-я])(?=.*\\d).+$",
-            message = "Пароль должен содержать хотя бы одну заглавную, одну строчную букву и одну цифру!")
+            message = "The password must contain at least one uppercase, one lowercase letter and one digit!")
     private String password;
 
 }

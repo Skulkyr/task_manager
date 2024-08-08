@@ -3,7 +3,11 @@ package com.webapplication.task_management_system.entity.task;
 import com.webapplication.task_management_system.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -37,4 +41,23 @@ public class Task {
 
     @OneToMany(mappedBy = "task")
     private List<Comment> comments;
+
+    @CreationTimestamp
+    private LocalDateTime createDate;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Task task = (Task) o;
+
+        return new EqualsBuilder().append(id, task.id).append(title, task.title).append(description, task.description).append(priority, task.priority).append(author, task.author).append(executor, task.executor).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(id).append(title).append(description).append(priority).append(author).append(executor).toHashCode();
+    }
 }

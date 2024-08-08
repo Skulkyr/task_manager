@@ -15,19 +15,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RegisterRequest {
 
-    @Size(min = 2, message = "Имя не может быть короче 2 символов!")
+    @Size(min = 2, message = "The name cannot be shorter than 2 characters!")
     private String firstName;
 
-    @Size(min = 2, message = "Фамилия не может быть короче 2 символов!")
+    @Size(min = 2, message = "The last name cannot be shorter than 2 characters!")
     private String lastName;
 
-    @NotBlank(message = "Введите Email!")
-    @Email(message = "Некорректный email адресс!")
+    @NotBlank(message = "Enter Your Email!")
+    @Email(message = "Incorrect email address!")
     private String email;
 
-    @Size(min = 8, message = "Пароль должен содержать не менее 8 символов!")
+    @Size(min = 8, message = "The password must contain at least 8 characters!")
     @Pattern(
             regexp = "^(?=.*[a-zA-Zа-яА-Я])(?=.*[A-ZА-Я])(?=.*[a-zа-я])(?=.*\\d).+$",
-            message = "Пароль должен содержать хотя бы одну заглавную, одну строчную букву и одну цифру!")
+            message = "The password must contain at least one uppercase, one lowercase letter and one digit!")
     private String password;
 }

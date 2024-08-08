@@ -4,9 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.webapplication.task_management_system.entity.task.Task;
 import jakarta.persistence.*;
 import lombok.*;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -47,6 +50,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "executor")
     private List<Task> executableTasks;
 
+    @CreationTimestamp
+    private LocalDateTime createDate;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -57,4 +63,22 @@ public class User implements UserDetails {
     public String getUsername() {
         return email;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        return new org.apache.commons.lang3.builder.EqualsBuilder().append(id, user.id).append(firstName, user.firstName).append(lastName, user.lastName).append(email, user.email).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(id).append(firstName).append(lastName).append(email).toHashCode();
+    }
+
+
 }
