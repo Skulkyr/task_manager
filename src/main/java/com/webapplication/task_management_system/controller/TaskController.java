@@ -9,6 +9,9 @@ import com.webapplication.task_management_system.entity.user.User;
 import com.webapplication.task_management_system.mapper.TaskMapper;
 import com.webapplication.task_management_system.services.TaskService;
 import com.webapplication.task_management_system.utils.ValidUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +25,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@Tag(name = "Task controller", description = "Manages the creation, receipt and editing of tasks")
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -32,12 +35,13 @@ public class TaskController {
     private final TaskService taskService;
     private final ValidUtils validUtils;
 
+    @Operation(summary = "Save task")
     @PostMapping
     public ResponseEntity<TaskResponse> saveTask(@Valid @RequestBody TaskRequest taskRequest,
                                                  BindingResult bindingResult,
                                                  @AuthenticationPrincipal User user) {
 
-        validUtils.checkErrors(user, bindingResult);
+        validUtils.checkErrors(bindingResult);
 
         Task task = taskMapper.taskRequestToTask(taskRequest);
         task.setAuthor(user);
@@ -47,13 +51,14 @@ public class TaskController {
                 .body(taskMapper.taskToTaskResponse(task));
     }
 
+    @Operation(summary = "Edit task")
     @PutMapping("/{id}")
     public ResponseEntity<TaskResponse> editTask(@Valid @RequestBody TaskRequest taskRequest,
                                                  BindingResult bindingResult,
                                                  @AuthenticationPrincipal User user,
-                                                 @PathVariable("id") Long id) {
+                                                 @PathVariable("id") @Parameter(description = "Task id") Long id) {
 
-        validUtils.checkErrors(user, bindingResult);
+        validUtils.checkErrors(bindingResult);
 
         Task taskFromDb = taskService.getTaskById(id);
         Task task = taskMapper.taskRequestToTask(taskRequest);
@@ -67,13 +72,14 @@ public class TaskController {
                 .body(taskMapper.taskToTaskResponse(task));
     }
 
+    @Operation(summary = "Change task status")
     @PutMapping("/{id}/status")
     public void changeStatus(@Valid @RequestBody TaskStatusRequest taskStatusRequest,
                              BindingResult bindingResult,
                              @AuthenticationPrincipal User user,
-                             @PathVariable("id") Long id) {
+                             @PathVariable("id") @Parameter(description = "Task id") Long id) {
 
-        validUtils.checkErrors(user, bindingResult);
+        validUtils.checkErrors(bindingResult);
         Task taskFromDb = taskService.getTaskById(id);
         validUtils.checkEditTaskStatusAuthority(taskFromDb, user);
 
@@ -81,23 +87,26 @@ public class TaskController {
         taskFromDb.setStatus(status);
         taskService.saveTask(taskFromDb);
     }
-
+    @Operation(summary = "Delete task")
     @DeleteMapping("/{id}")
     public void deleteTask(@AuthenticationPrincipal User user,
-                           @PathVariable("id") Long id) {
+                           @PathVariable("id") @Parameter(description = "Task id") Long id) {
 
         Task taskFromDb = taskService.getTaskById(id);
         validUtils.checkEditTaskAuthority(taskFromDb, user);
         taskService.deleteTaskFromId(id);
     }
 
+
+    @Operation(summary = "Get task by id")
     @GetMapping("/{id}")
-    public ResponseEntity<TaskResponse> getTask(@PathVariable("id") Long id) {
+    public ResponseEntity<TaskResponse> getTask(@PathVariable("id") @Parameter(description = "Task id") Long id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(taskMapper.taskToTaskResponse(taskService.getTaskById(id)));
     }
 
+    @Operation(summary = "Get a filtered and sorted list of tasks")
     @GetMapping()
     public List<TaskResponse> getSortedTask(@RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "10") int size,

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "task")
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +41,7 @@ public class Task {
     @JoinColumn(name = "executor_id")
     private User executor;
 
-    @OneToMany(mappedBy = "task")
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
     @CreationTimestamp
@@ -59,5 +61,19 @@ public class Task {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37).append(id).append(title).append(description).append(priority).append(author).append(executor).toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("title", title)
+                .append("description", description)
+                .append("status", status.getDescription())
+                .append("priority", priority.getDescription())
+                .append("authorEmail", author.getEmail())
+                .append("executorEmail", executor.getEmail())
+                .append("createDate", createDate)
+                .toString();
     }
 }

@@ -44,10 +44,10 @@ public class User implements UserDetails {
     @Column(name = "role")
     private List<Role> roles;
 
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Task> createdTasks;
 
-    @OneToMany(mappedBy = "executor")
+    @OneToMany(mappedBy = "executor", cascade = CascadeType.MERGE)
     private List<Task> executableTasks;
 
     @CreationTimestamp

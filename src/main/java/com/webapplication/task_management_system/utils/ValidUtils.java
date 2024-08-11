@@ -5,7 +5,6 @@ import com.webapplication.task_management_system.entity.task.Task;
 import com.webapplication.task_management_system.entity.user.Role;
 import com.webapplication.task_management_system.entity.user.User;
 import com.webapplication.task_management_system.exception.TaskEditPermissionException;
-import com.webapplication.task_management_system.exception.UnauthorizedAccessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
@@ -18,15 +17,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ValidUtils {
 
-    public void checkErrors(User user, BindingResult bindingResult) {
-        if (user == null) throw new UnauthorizedAccessException("Please log in");
-        checkErrors(bindingResult);
-    }
-
-    public void checkErrors(User user) {
-        if (user == null) throw new UnauthorizedAccessException("Please log in");
-    }
-
     public void checkErrors(BindingResult bindingResult) {
         if (bindingResult.hasErrors())
             throw new IllegalArgumentException(bindingResultErrorToString(bindingResult));
@@ -35,7 +25,6 @@ public class ValidUtils {
     public void checkEditTaskAuthorityAndFill(Task taskFromDb, Task task, User user) {
 
         task.setId(taskFromDb.getId());
-        checkErrors(user);
 
         if (taskFromDb.getAuthor().equals(user))
             task.setAuthor(user);

@@ -8,6 +8,8 @@ import com.webapplication.task_management_system.mapper.CommentMapper;
 import com.webapplication.task_management_system.services.CommentService;
 import com.webapplication.task_management_system.services.TaskService;
 import com.webapplication.task_management_system.utils.ValidUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +22,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@Tag(name = "Comment controller", description = "Manages the creation, receipt and editing of comments")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/task")
@@ -29,7 +31,7 @@ public class CommentController {
     private final ValidUtils validUtils;
     private final CommentService commentService;
     private final CommentMapper commentMapper;
-
+    @Operation(summary = "Get a filtered and sorted list of comments")
     @GetMapping( value = {"/comments", "/{taskId}/comments"})
     public List<CommentResponse> getComments(@RequestParam(defaultValue = "0") int page,
                                              @RequestParam(defaultValue = "10") int size,
@@ -44,13 +46,13 @@ public class CommentController {
                 .map(commentMapper::commentToCommentResponse)
                 .toList();
     }
-
+    @Operation(summary = "Add new comment")
     @PostMapping("/{commentId}/comments")
     public ResponseEntity<CommentResponse> addComment(@Valid @RequestBody CommentRequest commentRequest,
                                                       @AuthenticationPrincipal User user,
                                                       @PathVariable("commentId") Long commentId,
                                                       BindingResult bindingResult) {
-        validUtils.checkErrors(user, bindingResult);
+        validUtils.checkErrors(bindingResult);
 
         Comment comment = commentMapper.commentRequestToComment(commentRequest);
         comment.setTask(taskService.getTaskById(commentId));
@@ -62,6 +64,7 @@ public class CommentController {
                 .body(commentMapper.commentToCommentResponse(comment));
     }
 
+    @Operation(summary = "Delete comment")
     @DeleteMapping("/*/comments/{commentId}")
     public void deleteComment(@AuthenticationPrincipal User user,
                               @PathVariable("commentId") Long commentId) {
@@ -71,6 +74,7 @@ public class CommentController {
         commentService.deleteComment(commentId);
     }
 
+    @Operation(summary = "Edit comment")
     @PutMapping("/*/comments/{commentId}")
     public CommentResponse editComment(@AuthenticationPrincipal User user,
                                        @PathVariable("commentId") Long commentId,

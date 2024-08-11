@@ -6,7 +6,6 @@ import com.webapplication.task_management_system.DTO.comment.CommentRequest;
 import com.webapplication.task_management_system.DTO.comment.CommentResponse;
 import com.webapplication.task_management_system.entity.task.Comment;
 import com.webapplication.task_management_system.entity.task.Task;
-import com.webapplication.task_management_system.entity.user.User;
 import com.webapplication.task_management_system.mapper.CommentMapper;
 import com.webapplication.task_management_system.services.CommentService;
 import com.webapplication.task_management_system.services.TaskService;
@@ -26,7 +25,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.validation.BindingResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,7 +117,6 @@ public class CommentControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(commentResponse)));
 
 
-        verify(validUtils, times(1)).checkErrors(any(User.class), any(BindingResult.class));
         verify(commentMapper, times(1)).commentRequestToComment(commentRequest);
         verify(taskService, times(1)).getTaskById(task.getId());
         verify(commentService, times(1)).addComment(comment);
@@ -139,7 +136,6 @@ public class CommentControllerTest {
                         .andExpect(status().is(400));
 
 
-        verify(validUtils, never()).checkErrors(any(), any());
         verify(commentMapper, never()).commentRequestToComment(any());
         verify(taskService, never()).getTaskById(any());
         verify(commentService, never()).addComment(any());

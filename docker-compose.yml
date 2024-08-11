@@ -1,0 +1,33 @@
+version: '1.0'
+
+volumes:
+  pg_task_managment:
+
+services:
+
+  task_db:
+    image: 'postgres:16.4'
+    container_name: task_db
+    restart: always
+    environment:
+      - 'POSTGRES_USER=root'
+      - 'POSTGRES_PASSWORD=1234'
+      - 'POSTGRES_DB=task_db'
+    volumes:
+      - pg_task_managment:/var/lib/postgresql/data
+      - ./src/main/resources/db-init:/docker-entrypoint-initdb.d
+    ports:
+      - "127.0.0.1:5432:5432"
+
+  app:
+    restart: always
+    build: .
+    ports:
+      - "8181:8080"
+    depends_on:
+      - task_db
+    environment:
+      SPRING_DATASOURCE_URL: 'jdbc:postgresql://task_db:5432/task_db'
+      SPRING_DATASOURCE_USERNAME: 'root'
+      SPRING_DATASOURCE_PASSWORD: '1234'
+      JAVA_OPTS: '-Xmx1024m'
