@@ -9,7 +9,7 @@ Task Management System — это RESTful API для управления зад
 1. Клонируйте репозиторий:
 
 bash
-git clone https://github.com/ваш-репозиторий.git
+git clone https://github.com/Skulkyr/task_manager.git
 cd ваш-репозиторий
 
 
