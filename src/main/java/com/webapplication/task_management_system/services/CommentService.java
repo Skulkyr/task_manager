@@ -3,7 +3,6 @@ package com.webapplication.task_management_system.services;
 import com.webapplication.task_management_system.entity.task.Comment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 public interface CommentService {
 
