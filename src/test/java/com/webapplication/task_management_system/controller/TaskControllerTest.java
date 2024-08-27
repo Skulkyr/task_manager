@@ -377,7 +377,7 @@ public class TaskControllerTest {
         String statusStr = "в работе";
         TaskStatusRequest taskStatusRequest = new TaskStatusRequest();
         taskStatusRequest.setStatus(statusStr);
-        User executor = new User(null, null, null, "executor@mail.ru", null, List.of(Role.ROLE_USER), null, null, null);
+        User executor = new User(null, null, null, "executor@mail.ru", null, List.of(Role.ROLE_USER), null, null, null, null);
         task.setExecutor(executor);
         when(taskService.getTaskById(ID)).thenReturn(task);
         when(taskService.saveTask(task)).thenReturn(task);
@@ -404,7 +404,7 @@ public class TaskControllerTest {
         String statusStr = "в работе";
         TaskStatusRequest taskStatusRequest = new TaskStatusRequest();
         taskStatusRequest.setStatus(statusStr);
-        User executor = new User(null, null, null, "executor@mail.ru", null, List.of(Role.ROLE_USER), null, null, null);
+        User executor = new User(null, null, null, "executor@mail.ru", null, List.of(Role.ROLE_USER), null, null, null, null);
         task.setExecutor(executor);
         when(taskService.getTaskById(ID)).thenReturn(task);
         when(taskService.saveTask(task)).thenReturn(task);
@@ -431,7 +431,7 @@ public class TaskControllerTest {
         String statusStr = "в работе";
         TaskStatusRequest taskStatusRequest = new TaskStatusRequest();
         taskStatusRequest.setStatus(statusStr);
-        User executor = new User(null, null, null, "executor@mail.ru", null, List.of(Role.ROLE_USER), null, null, null);
+        User executor = new User(null, null, null, "executor@mail.ru", null, List.of(Role.ROLE_USER), null, null, null, null);
         task.setExecutor(executor);
         when(taskService.getTaskById(ID)).thenReturn(task);
 
