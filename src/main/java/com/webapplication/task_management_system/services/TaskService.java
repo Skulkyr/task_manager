@@ -1,5 +1,6 @@
 package com.webapplication.task_management_system.services;
 
+import com.webapplication.task_management_system.DTO.criteria.SearchDTO;
 import com.webapplication.task_management_system.entity.task.Task;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,5 +14,5 @@ public interface TaskService {
 
     Task getTaskById(Long id);
 
-    Page<Task> getPageSortTasks(Pageable pageable, String authorEmail, String executorEmail);
+    Page<Task> getPageSortTasks(SearchDTO searchDTO);
 }
