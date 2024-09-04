@@ -11,7 +11,7 @@ public class SearchCriteriaDTO {
     
 
     public enum Operation {
-        EQUALS, LIKE, IN, GREATER_THAT, LESS_THAT, BETWEEN
+        EQUALS, LIKE, IN, GREATER_THAN, LESS_THAN, BETWEEN
     }
     
 }

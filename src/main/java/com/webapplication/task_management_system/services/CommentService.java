@@ -1,8 +1,8 @@
 package com.webapplication.task_management_system.services;
 
+import com.webapplication.task_management_system.DTO.criteria.SearchDTO;
 import com.webapplication.task_management_system.entity.task.Comment;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 /**
  * The interface Comment service.
@@ -35,10 +35,7 @@ public interface CommentService {
     /**
      * Gets page of comment.
      *
-     * @param pageable    the pageable
-     * @param authorEmail the author email
-     * @param taskId      the task id
-     * @return the page sort tasks
+     * @param searchDTO the these are DTOs containing search criteria and operators.
      */
-    Page<Comment> getPageSortTasks(Pageable pageable, String authorEmail, Long taskId);
+    Page<Comment> getPageSortTasks(SearchDTO searchDTO);
 }

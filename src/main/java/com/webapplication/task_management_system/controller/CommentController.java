@@ -2,6 +2,7 @@ package com.webapplication.task_management_system.controller;
 
 import com.webapplication.task_management_system.DTO.comment.CommentRequest;
 import com.webapplication.task_management_system.DTO.comment.CommentResponse;
+import com.webapplication.task_management_system.DTO.criteria.SearchDTO;
 import com.webapplication.task_management_system.entity.task.Comment;
 import com.webapplication.task_management_system.entity.user.User;
 import com.webapplication.task_management_system.mapper.CommentMapper;
@@ -12,9 +13,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,30 +30,22 @@ public class CommentController {
     private final CommentService commentService;
     private final CommentMapper commentMapper;
     @Operation(summary = "Get a filtered and sorted list of comments")
-    @GetMapping( value = {"/comments", "/{taskId}/comments"})
-    public List<CommentResponse> getComments(@RequestParam(defaultValue = "0") int page,
-                                             @RequestParam(defaultValue = "10") int size,
-                                             @RequestParam(defaultValue = "createDate") String sortBy,
-                                             @RequestParam(defaultValue = "DESC") Sort.Direction direction,
-                                             @RequestParam(required = false) String authorEmail,
-                                             @PathVariable(required = false) Long taskId) {
+    @PostMapping( value = {"/comments/search"})
+    public List<CommentResponse> getComments(@RequestBody SearchDTO searchDTO) {
 
-        Pageable pageable = PageRequest.of(page, size, direction, sortBy);
-
-        return commentService.getPageSortTasks(pageable, authorEmail, taskId).stream()
-                .map(commentMapper::commentToCommentResponse)
-                .toList();
+        return commentService.getPageSortTasks(searchDTO)
+                .stream().map(commentMapper::commentToCommentResponse).toList();
     }
     @Operation(summary = "Add new comment")
-    @PostMapping("/{commentId}/comments")
+    @PostMapping("/{taskId}/comments")
     public ResponseEntity<CommentResponse> addComment(@Valid @RequestBody CommentRequest commentRequest,
                                                       @AuthenticationPrincipal User user,
-                                                      @PathVariable("commentId") Long commentId,
+                                                      @PathVariable("taskId") Long taskId,
                                                       BindingResult bindingResult) {
         validUtils.checkErrors(bindingResult);
 
         Comment comment = commentMapper.commentRequestToComment(commentRequest);
-        comment.setTask(taskService.getTaskById(commentId));
+        comment.setTask(taskService.getTaskById(taskId));
         comment.setAuthor(user);
         comment = commentService.addComment(comment);
 

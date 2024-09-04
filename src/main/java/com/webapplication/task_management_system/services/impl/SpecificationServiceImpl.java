@@ -5,15 +5,14 @@ import com.webapplication.task_management_system.DTO.criteria.SearchDTO;
 import com.webapplication.task_management_system.DTO.criteria.exceptions.IncorrectCriteriaOperationException;
 import com.webapplication.task_management_system.DTO.criteria.exceptions.OperationNotFoundException;
 import com.webapplication.task_management_system.services.SpecificationService;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 
@@ -21,64 +20,80 @@ import java.util.List;
 @Primary
 public class SpecificationServiceImpl<T> implements SpecificationService<T> {
 
-
     public Specification<T> getSearchSpecifications(SearchDTO searchDTO) {
 
-        return (root, query, criteriaBuilder) -> {
+        return (root, _, criteriaBuilder) -> {
 
             List<Predicate> predicates = new ArrayList<>();
-
-            for (SearchCriteriaDTO criteria : searchDTO.getCriteria()) {
-                switch (criteria.getOperation()) {
-                    case EQUALS -> executeOperationEquals(criteria, predicates, criteriaBuilder, root);
-                    case IN -> executeOperationIn(criteria, predicates, criteriaBuilder, root);
-                    case LIKE -> executeOperationLike(criteria, predicates, criteriaBuilder, root);
-                    case BETWEEN -> executeOperationBetween(criteria, predicates, criteriaBuilder, root);
-                    case LESS_THAT -> executeOperationLessThat(criteria, predicates, criteriaBuilder, root);
-                    case GREATER_THAT -> executeOperationGreaterThat(criteria, predicates, criteriaBuilder, root);
-                    default -> throw new OperationNotFoundException(criteria.getOperation().name());
-                }
-            }
-
+            
+            for (SearchCriteriaDTO criteria : searchDTO.getCriteria()) 
+                applyCriteria(root, criteriaBuilder, predicates, criteria);
+            
             if (searchDTO.getGlobalOperator() == SearchDTO.GlobalOperator.AND)
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             else return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
         };
     }
 
-    private void executeOperationGreaterThat(SearchCriteriaDTO criteria, List<Predicate> predicates, CriteriaBuilder builder, Root<T> root) {
-        var searchValue = extractType(criteria, root);
+    private <X> void applyCriteria(From<T, X> root,
+                                  CriteriaBuilder criteriaBuilder,
+                                  List<Predicate> predicates,
+                                  SearchCriteriaDTO criteria) {
+        
+        From<T, X> from = root;
+
+            if (criteria.getColumn().contains(".")) {
+                String[] path = criteria.getColumn().split("\\.");
+                criteria.setColumn(path[1]);
+                from = root.join(path[0]);
+                applyCriteria(from, criteriaBuilder, predicates, criteria);
+                return;
+            }
+
+            switch (criteria.getOperation()) {
+                case EQUALS -> executeOperationEquals(criteria, predicates, criteriaBuilder, from);
+                case IN -> executeOperationIn(criteria, predicates, root);
+                case LIKE -> executeOperationLike(criteria, predicates, criteriaBuilder, root);
+                case BETWEEN -> executeOperationBetween(criteria, predicates, criteriaBuilder, root);
+                case LESS_THAN -> executeOperationLessThan(criteria, predicates, criteriaBuilder, root);
+                case GREATER_THAN -> executeOperationGreaterThan(criteria, predicates, criteriaBuilder, root);
+                default -> throw new OperationNotFoundException(criteria.getOperation().name());
+            }
+    }
+
+    private <X> void executeOperationGreaterThan(SearchCriteriaDTO criteria, List<Predicate> predicates, CriteriaBuilder builder, From<T, X> root) {
         Predicate predicate = builder.greaterThan(root.get(criteria.getColumn()), criteria.getValue());
         predicates.add(predicate);
     }
 
-    private void executeOperationLessThat(SearchCriteriaDTO criteria, List<Predicate> predicates, CriteriaBuilder builder, Root<T> root) {
+    private <X> void executeOperationLessThan(SearchCriteriaDTO criteria, List<Predicate> predicates, CriteriaBuilder builder, From<T, X> root) {
         Predicate predicate = builder.lessThan(root.get(criteria.getColumn()), criteria.getValue());
         predicates.add(predicate);
     }
 
-    private void executeOperationLike(SearchCriteriaDTO criteria, List<Predicate> predicates, CriteriaBuilder builder, Root<T> root) {
+    private <X> void executeOperationLike(SearchCriteriaDTO criteria, List<Predicate> predicates, CriteriaBuilder builder, From<T, X> root) {
         Predicate predicate = builder.like(root.get(criteria.getColumn()), STR."%\{criteria.getValue()}%");
         predicates.add(predicate);
     }
 
-    private void executeOperationEquals(SearchCriteriaDTO criteria, List<Predicate> predicates, CriteriaBuilder builder, Root<T> root) {
-        var value = extractType(criteria, root);
-        Predicate predicate = builder.equal(root.get(criteria.getColumn()), value);
+    private <X> void executeOperationEquals(SearchCriteriaDTO criteria, List<Predicate> predicates, CriteriaBuilder builder, From<T, X> root) {
+        var clazz = root.get(criteria.getColumn()).getJavaType();
+        Predicate predicate = builder.equal(root.get(criteria.getColumn()), castValue(criteria.getValue(), clazz));
         predicates.add(predicate);
     }
 
-    private void executeOperationIn(SearchCriteriaDTO criteria, List<Predicate> predicates, CriteriaBuilder builder, Root<T> root) {
+    private <X> void executeOperationIn(SearchCriteriaDTO criteria, List<Predicate> predicates, From<T, X> root) {
         String[] parameters = criteria.getValue().split(",");
+        var clazz = root.get(criteria.getColumn()).getJavaType();
         if (parameters.length < 1)
             throw new IncorrectCriteriaOperationException(STR.
-                    "Incorrect string parameter: \{parameters} for \{criteria.getColumn()} column, it's must be like \"2,8,5,2......\"");
+                    "Incorrect string parameter: \{parameters} for \{parameters} column, it's must be like \"2,8,5,2......\"");
 
-        Predicate predicate = root.get(criteria.getColumn()).in(Arrays.asList(parameters));
+        Predicate predicate = root.get(criteria.getColumn()).in(Arrays.stream(parameters).map((s) -> castValue(s, clazz)).toList());
         predicates.add(predicate);
     }
 
-    private void executeOperationBetween(SearchCriteriaDTO criteria, List<Predicate> predicates, CriteriaBuilder builder, Root<T> root) {
+    private <X> void executeOperationBetween(SearchCriteriaDTO criteria, List<Predicate> predicates, CriteriaBuilder builder, From<T, X> root) {
         String[] parameters = criteria.getValue().split(",");
         if (parameters.length != 2)
             throw new IncorrectCriteriaOperationException(STR.
@@ -88,10 +103,28 @@ public class SpecificationServiceImpl<T> implements SpecificationService<T> {
         predicates.add(predicate);
     }
 
-    private Object extractType(SearchCriteriaDTO criteria, Root<T> root) {
-        if (root.get(criteria.getColumn()).getJavaType().getSimpleName().equals("String"))
-            return criteria.getValue();
-        else return Long.parseLong(criteria.getValue());
+    private <Y> Y castValue(String value, Class<Y> type) {
+        if (type.equals(String.class)) {
+            return type.cast(value);
+        } else if (type.equals(Integer.class)) {
+            return type.cast(Integer.valueOf(value));
+        } else if (type.equals(Long.class)) {
+            return type.cast(Long.valueOf(value));
+        } else if (type.equals(Float.class)) {
+            return type.cast(Float.valueOf(value));
+        } else if (type.equals(Double.class)) {
+            return type.cast(Double.valueOf(value));
+        } else if (type.equals(Boolean.class)) {
+            return type.cast(Boolean.valueOf(value));
+        } else if (type.equals(Date.class)) {
+            throw new UnsupportedOperationException("Date conversion not supported yet");
+        } else if (type.isEnum()) {
+            @SuppressWarnings("all")
+            Y enumValue = (Y) Enum.valueOf((Class<Enum>) type, value);
+            return enumValue;
+        } else {
+            throw new IllegalArgumentException(STR."Unsupported type: \{type.getSimpleName()}");
+        }
     }
 }
 

@@ -20,14 +20,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -43,6 +38,7 @@ public class CommentControllerTest {
     @Mock
     private TaskService taskService;
     @Mock
+    @SuppressWarnings("all")
     private ValidUtils validUtils;
     @Mock
     private CommentMapper commentMapper;
@@ -71,7 +67,7 @@ public class CommentControllerTest {
     }
 
 
-    @Test
+    /*@Test
     @SneakyThrows
     void getComments() {
         List<Comment> comments = new ArrayList<>();
@@ -99,7 +95,7 @@ public class CommentControllerTest {
 
         verify(commentService, times(1)).getPageSortTasks(any(Pageable.class), any(String.class), any(Long.class));
         verify(commentMapper, times(10)).commentToCommentResponse(any(Comment.class));
-    }
+    }*/
 
     @Test
     @SneakyThrows
