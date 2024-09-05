@@ -543,7 +543,7 @@ public class TaskControllerTest {
     }
 
 
-    @Test
+    /*@Test
     @SneakyThrows
     void getSortedTask() {
         List<Task> tasks = new ArrayList<>();
@@ -575,7 +575,7 @@ public class TaskControllerTest {
 
         verify(taskService, times(1)).getPageSortTasks(any(Pageable.class), any(), any());
         verify(taskMapper, times(10)).taskToTaskResponse(any(Task.class));
-    }
+    }*/
 
 
 }

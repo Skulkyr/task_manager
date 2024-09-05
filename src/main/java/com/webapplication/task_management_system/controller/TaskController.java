@@ -1,5 +1,6 @@
 package com.webapplication.task_management_system.controller;
 
+import com.webapplication.task_management_system.DTO.criteria.SearchDTO;
 import com.webapplication.task_management_system.DTO.task.TaskRequest;
 import com.webapplication.task_management_system.DTO.task.TaskResponse;
 import com.webapplication.task_management_system.DTO.task.TaskStatusRequest;
@@ -15,25 +16,24 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 @Tag(name = "Task controller", description = "Manages the creation, receipt and editing of tasks")
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/task")
 public class TaskController {
+
     private final TaskMapper taskMapper;
     private final TaskService taskService;
     private final ValidUtils validUtils;
+
 
     @Operation(summary = "Save task")
     @PostMapping
@@ -107,19 +107,14 @@ public class TaskController {
     }
 
     @Operation(summary = "Get a filtered and sorted list of tasks")
-    @GetMapping()
-    public List<TaskResponse> getSortedTask(@RequestParam(defaultValue = "0") int page,
-                                            @RequestParam(defaultValue = "10") int size,
-                                            @RequestParam(defaultValue = "createDate") String sortBy,
-                                            @RequestParam(defaultValue = "DESC") Sort.Direction direction,
-                                            @RequestParam(required = false) String authorEmail,
-                                            @RequestParam(required = false) String executorEmail) {
+    @PostMapping("/search")
+    public Page<TaskResponse> getSortedTask(@RequestBody SearchDTO searchDTO) {
 
-        Pageable pageable = PageRequest.of(page, size, direction, sortBy);
+        Page<Task> taskPage = taskService.getPageSortTasks(searchDTO);
 
-        return taskService
-                .getPageSortTasks(pageable, authorEmail, executorEmail).stream()
-                .map(taskMapper::taskToTaskResponse)
-                .toList();
+        return new PageImpl<>(
+                taskPage.getContent().stream().map(taskMapper::taskToTaskResponse).toList(),
+                taskPage.getPageable(),
+                taskPage.getTotalElements());
     }
 }

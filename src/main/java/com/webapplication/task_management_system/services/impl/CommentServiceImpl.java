@@ -1,18 +1,16 @@
 package com.webapplication.task_management_system.services.impl;
 
+import com.webapplication.task_management_system.DTO.criteria.SearchDTO;
 import com.webapplication.task_management_system.entity.task.Comment;
 import com.webapplication.task_management_system.repository.CommentRepository;
 import com.webapplication.task_management_system.services.CommentService;
-import io.micrometer.common.util.StringUtils;
+import com.webapplication.task_management_system.services.SpecificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
 @Service
 @Primary
 @RequiredArgsConstructor
@@ -20,6 +18,7 @@ import java.util.Objects;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
+    private final SpecificationService<Comment> specificationService;
 
     @Override
     public Comment addComment(Comment comment) {
@@ -44,17 +43,10 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public Page<Comment> getPageSortTasks(Pageable pageable, String authorEmail, Long taskId) {
+    public Page<Comment> getPageSortTasks(SearchDTO searchDTO) {
 
-        if(!StringUtils.isBlank(authorEmail) && !Objects.isNull(taskId))
-            return commentRepository.findAll(pageable, authorEmail, taskId);
+        var specification = specificationService.getSearchSpecifications(searchDTO);
 
-        if (!Objects.isNull(taskId))
-            return commentRepository.findAllByTaskId(pageable, taskId);
-
-        if (!StringUtils.isBlank(authorEmail))
-            return commentRepository.findAllByAuthorEmail(pageable, authorEmail);
-
-        return commentRepository.findAll(pageable);
+        return commentRepository.findAll(specification, searchDTO.getPageable());
     }
 }
