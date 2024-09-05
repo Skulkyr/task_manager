@@ -16,13 +16,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 @Tag(name = "Task controller", description = "Manages the creation, receipt and editing of tasks")
 @Slf4j
 @RestController
@@ -108,9 +108,13 @@ public class TaskController {
 
     @Operation(summary = "Get a filtered and sorted list of tasks")
     @PostMapping("/search")
-    public List<TaskResponse> getSortedTask(@RequestBody SearchDTO searchDTO) {
+    public Page<TaskResponse> getSortedTask(@RequestBody SearchDTO searchDTO) {
 
-        return taskService.getPageSortTasks(searchDTO)
-                .stream().map(taskMapper::taskToTaskResponse).toList();
+        Page<Task> taskPage = taskService.getPageSortTasks(searchDTO);
+
+        return new PageImpl<>(
+                taskPage.getContent().stream().map(taskMapper::taskToTaskResponse).toList(),
+                taskPage.getPageable(),
+                taskPage.getTotalElements());
     }
 }

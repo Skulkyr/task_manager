@@ -52,11 +52,11 @@ public class SpecificationServiceImpl<T> implements SpecificationService<T> {
 
             switch (criteria.getOperation()) {
                 case EQUALS -> executeOperationEquals(criteria, predicates, criteriaBuilder, from);
-                case IN -> executeOperationIn(criteria, predicates, root);
-                case LIKE -> executeOperationLike(criteria, predicates, criteriaBuilder, root);
-                case BETWEEN -> executeOperationBetween(criteria, predicates, criteriaBuilder, root);
-                case LESS_THAN -> executeOperationLessThan(criteria, predicates, criteriaBuilder, root);
-                case GREATER_THAN -> executeOperationGreaterThan(criteria, predicates, criteriaBuilder, root);
+                case IN -> executeOperationIn(criteria, predicates, from);
+                case LIKE -> executeOperationLike(criteria, predicates, criteriaBuilder, from);
+                case BETWEEN -> executeOperationBetween(criteria, predicates, criteriaBuilder, from);
+                case LESS_THAN -> executeOperationLessThan(criteria, predicates, criteriaBuilder, from);
+                case GREATER_THAN -> executeOperationGreaterThan(criteria, predicates, criteriaBuilder, from);
                 default -> throw new OperationNotFoundException(criteria.getOperation().name());
             }
     }

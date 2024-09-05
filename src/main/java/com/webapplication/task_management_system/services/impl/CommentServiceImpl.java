@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 @Service
@@ -49,6 +47,6 @@ public class CommentServiceImpl implements CommentService {
 
         var specification = specificationService.getSearchSpecifications(searchDTO);
 
-        return commentRepository.findAll(specification, PageRequest.of(0, 10, Sort.Direction.ASC, "id"));
+        return commentRepository.findAll(specification, searchDTO.getPageable());
     }
 }
