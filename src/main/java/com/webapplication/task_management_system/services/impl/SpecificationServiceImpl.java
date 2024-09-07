@@ -5,13 +5,13 @@ import com.webapplication.task_management_system.DTO.criteria.SearchDTO;
 import com.webapplication.task_management_system.DTO.criteria.exceptions.IncorrectCriteriaOperationException;
 import com.webapplication.task_management_system.DTO.criteria.exceptions.OperationNotFoundException;
 import com.webapplication.task_management_system.services.SpecificationService;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.lang.annotation.Documented;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
