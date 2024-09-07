@@ -32,7 +32,6 @@ public class SecurityConfig {
     }
 
 
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
@@ -44,10 +43,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(request -> request
-                                .requestMatchers("/register").permitAll()
-                                .requestMatchers("/authenticate").permitAll()
-                                .requestMatchers(HttpMethod.GET).permitAll()
-                                .requestMatchers("/**").authenticated())
+                        .requestMatchers("/register").permitAll()
+                        .requestMatchers("/authenticate").permitAll()
+                        .requestMatchers(HttpMethod.GET).permitAll()
+                        .requestMatchers("/task/search", "/task/comments/search").permitAll()
+                        .requestMatchers("/**").authenticated())
 
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

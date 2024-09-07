@@ -20,13 +20,13 @@ public class MapperUtils {
 
     @Named("mapStringToPriority")
     public Priority mapStringToPriority(String priorityDescription) throws IllegalArgumentException {
-        if (priorityDescription == null) return Priority.middle;
+        if (priorityDescription == null) return Priority.MIDDLE;
         return Priority.fromString(priorityDescription);
     }
 
     @Named("mapStringToStatus")
     public Status mapStringToStatus(String statusDescription) throws IllegalArgumentException {
-        if (statusDescription == null) return Status.Waiting;
+        if (statusDescription == null) return Status.WAITING;
         return Status.fromString(statusDescription);
     }
 }

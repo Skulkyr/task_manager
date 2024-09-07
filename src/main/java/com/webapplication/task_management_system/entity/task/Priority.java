@@ -7,9 +7,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @RequiredArgsConstructor
 @Getter
 public enum Priority {
-    low("низкий"),
-    middle("средний"),
-    high("высокий");
+    LOW("low"),
+    MIDDLE("middle"),
+    HIGH("high");
 
     private final String description;
 

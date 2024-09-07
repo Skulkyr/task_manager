@@ -51,7 +51,7 @@ public class TaskController {
                 .body(taskMapper.taskToTaskResponse(task));
     }
 
-    @Operation(summary = "Edit task")
+    @Operation(summary = "Edit task", description = "Only the creator or admin can edit a task")
     @PutMapping("/{id}")
     public ResponseEntity<TaskResponse> editTask(@Valid @RequestBody TaskRequest taskRequest,
                                                  BindingResult bindingResult,
@@ -72,7 +72,7 @@ public class TaskController {
                 .body(taskMapper.taskToTaskResponse(task));
     }
 
-    @Operation(summary = "Change task status")
+    @Operation(summary = "Change task status", description = "Only the creator or admin can edit a task")
     @PutMapping("/{id}/status")
     public void changeStatus(@Valid @RequestBody TaskStatusRequest taskStatusRequest,
                              BindingResult bindingResult,
@@ -87,7 +87,7 @@ public class TaskController {
         taskFromDb.setStatus(status);
         taskService.saveTask(taskFromDb);
     }
-    @Operation(summary = "Delete task")
+    @Operation(summary = "Delete task", description = "Only the creator or admin can edit a task")
     @DeleteMapping("/{id}")
     public void deleteTask(@AuthenticationPrincipal User user,
                            @PathVariable("id") @Parameter(description = "Task id") Long id) {
@@ -106,10 +106,25 @@ public class TaskController {
                 .body(taskMapper.taskToTaskResponse(taskService.getTaskById(id)));
     }
 
-    @Operation(summary = "Get a filtered and sorted list of tasks")
-    @PostMapping("/search")
-    public Page<TaskResponse> getSortedTask(@RequestBody SearchDTO searchDTO) {
+    @Operation(summary = "Get a filtered and sorted list of tasks", description = """
+            Valid field values:
+            
+            id, title, description, status, priority.
+            
+            It is also possible to search for adjacent entities; to do this,
+            you need to specify the entity and the field separated by a dot, for example 'author.id'.
+            List of available fields for 'author.' and 'executor.' :
+            
+            id, firstName, lastName, email
+            
+            Available priority values: LOW, MIDDLE, HIGH
+            Available status values: WAITING, IN_PROCESS, DONE
+            """)
 
+    @PostMapping("/search")
+    public Page<TaskResponse> getSortedTask(@RequestBody(required = false) SearchDTO searchDTO) {
+
+        if (searchDTO == null) searchDTO = new SearchDTO();
         Page<Task> taskPage = taskService.getPageSortTasks(searchDTO);
 
         return new PageImpl<>(

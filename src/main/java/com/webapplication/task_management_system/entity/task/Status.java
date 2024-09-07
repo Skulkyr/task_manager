@@ -7,9 +7,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @RequiredArgsConstructor
 @Getter
 public enum Status {
-    Waiting("в ожидании"),
-    In_process("в работе"),
-    Done("завершено");
+    WAITING("waiting"),
+    IN_PROCESS("in process"),
+    DONE("done");
 
     private final String description;
 

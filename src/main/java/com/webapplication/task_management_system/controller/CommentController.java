@@ -29,11 +29,29 @@ public class CommentController {
     private final ValidUtils validUtils;
     private final CommentService commentService;
     private final CommentMapper commentMapper;
-    @Operation(summary = "Get a filtered and sorted list of comments")
+    @Operation(summary = "Get a filtered and sorted list of comments", description = """
+            Valid field values:
+       
+            id, comment, author
+            
+            It is also possible to search for adjacent entities; to do this,
+            you need to specify the entity and the field separated by a dot, for example 'author.id'.
+            List of available fields for 'author.' and 'task.author.' and 'task.executor.' :
+            
+            id, firstName, lastName, email
+            
+            List of available fields for 'task.' :
+            
+            id, title, description, status, priority.
+            
+            Available priority values: LOW, MIDDLE, HIGH
+            Available status values: WAITING, IN_PROCESS, DONE
+            """)
     @PostMapping( value = {"/comments/search"})
-    public Page<CommentResponse> getComments(@RequestBody SearchDTO searchDTO) {
+    public Page<CommentResponse> getComments(@RequestBody(required = false) SearchDTO searchDTO) {
 
-        Page<Comment> commentPage= commentService.getPageSortTasks(searchDTO);
+        if (searchDTO == null) searchDTO = new SearchDTO();
+        Page<Comment> commentPage = commentService.getPageSortTasks(searchDTO);
 
         return new PageImpl<>(
                 commentPage.getContent().stream().map(commentMapper::commentToCommentResponse).toList(),
@@ -58,7 +76,7 @@ public class CommentController {
                 .body(commentMapper.commentToCommentResponse(comment));
     }
 
-    @Operation(summary = "Delete comment")
+    @Operation(summary = "Delete comment", description = "Only the author or adin has the right to edit or delete comments")
     @DeleteMapping("/*/comments/{commentId}")
     public void deleteComment(@AuthenticationPrincipal User user,
                               @PathVariable("commentId") Long commentId) {
@@ -68,7 +86,7 @@ public class CommentController {
         commentService.deleteComment(commentId);
     }
 
-    @Operation(summary = "Edit comment")
+    @Operation(summary = "Edit comment", description = "Only the author or adin has the right to edit or delete comments")
     @PutMapping("/*/comments/{commentId}")
     public CommentResponse editComment(@AuthenticationPrincipal User user,
                                        @PathVariable("commentId") Long commentId,
