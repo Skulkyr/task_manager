@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,6 +47,12 @@ public class Task {
 
     @CreationTimestamp
     private LocalDateTime createDate;
+
+    @UpdateTimestamp
+    private LocalDateTime updateDate;
+
+    @Version
+    private Integer version;
 
     @Override
     public boolean equals(Object o) {

@@ -16,6 +16,7 @@ public interface TaskMapper {
     @Mapping(source = "status.description", target = "status")
     @Mapping(source = "priority.description", target = "priority")
     @Mapping(source = "createDate", target = "createDate")
+    @Mapping(source = "updateDate", target = "updateDate")
     TaskResponse taskToTaskResponse(Task task);
 
     @Mapping(source = "executorEmail", target = "executor", qualifiedByName = "setExecutor")

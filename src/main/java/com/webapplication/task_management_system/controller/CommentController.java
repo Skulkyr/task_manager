@@ -11,13 +11,16 @@ import com.webapplication.task_management_system.services.TaskService;
 import com.webapplication.task_management_system.utils.ValidUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 @Tag(name = "Comment controller", description = "Manages the creation, receipt and editing of comments")
@@ -78,6 +81,8 @@ public class CommentController {
 
     @Operation(summary = "Delete comment", description = "Only the author or adin has the right to edit or delete comments")
     @DeleteMapping("/*/comments/{commentId}")
+    @Transactional
+    @Retryable(retryFor = OptimisticLockException.class)
     public void deleteComment(@AuthenticationPrincipal User user,
                               @PathVariable("commentId") Long commentId) {
 
@@ -88,6 +93,8 @@ public class CommentController {
 
     @Operation(summary = "Edit comment", description = "Only the author or adin has the right to edit or delete comments")
     @PutMapping("/*/comments/{commentId}")
+    @Transactional
+    @Retryable(retryFor = {OptimisticLockException.class})
     public CommentResponse editComment(@AuthenticationPrincipal User user,
                                        @PathVariable("commentId") Long commentId,
                                        @Valid @RequestBody CommentRequest commentRequest

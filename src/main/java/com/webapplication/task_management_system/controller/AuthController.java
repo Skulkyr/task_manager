@@ -37,6 +37,8 @@ public class AuthController {
         AuthenticationResponse response = authenticationService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    
     @Operation(summary = "Authorization", responses =
             {@ApiResponse(description = "JWT token", responseCode = "200", content =
                     {@Content(mediaType = "JSON", examples = {@ExampleObject(value = "eyJhbGciOiJIUzUxMiJ9.eyJmaXJzdE5hbWUiOiJKYW5lIiwibGFzdE5hbWUiOiJTbWl0aCIsInN1YiI6ImphbmUuc21pdGhAZW1haWwuY29tIiwiaWF0IjoxNzI1NTI2MjMzLCJleHAiOjE3MjU1MzM0MzN9.r-m6Gn1z_5JbQMy_5-WDmWOifO7pMColrRCokDZI-c2mrvwUoPbRKtnHEuaSTZS6vXbhp_LUw7gF1LE5ghftFw")})})})

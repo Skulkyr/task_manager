@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 public class TaskResponse {
@@ -23,5 +25,6 @@ public class TaskResponse {
     private String status;
     @Schema(example = "2024-08-27T10:23:56.088237")
     private String createDate;
-
+    @Schema(example = "2024-08-27T10:23:56.088237")
+    private LocalDateTime updateDate;
 }

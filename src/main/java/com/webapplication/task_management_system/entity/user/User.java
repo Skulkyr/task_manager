@@ -7,6 +7,7 @@ import lombok.*;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.cglib.core.Local;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -56,6 +57,8 @@ public class User implements UserDetails {
 
     @UpdateTimestamp
     private LocalDateTime updateDate;
+    @Version
+    private Long version;
 
 
     @Override

@@ -17,4 +17,6 @@ public class CommentResponse {
     private Long taskId;
     @Schema(example = "2024-08-27T10:23:56.091352")
     private String createDate;
+    @Schema(example = "2024-08-27T10:23:56.091352")
+    private String updateDate;
 }

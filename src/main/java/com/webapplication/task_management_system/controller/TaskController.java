@@ -13,6 +13,7 @@ import com.webapplication.task_management_system.utils.ValidUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 @Tag(name = "Task controller", description = "Manages the creation, receipt and editing of tasks")
@@ -53,6 +56,8 @@ public class TaskController {
 
     @Operation(summary = "Edit task", description = "Only the creator or admin can edit a task")
     @PutMapping("/{id}")
+    @Transactional
+    @Retryable(retryFor = OptimisticLockException.class)
     public ResponseEntity<TaskResponse> editTask(@Valid @RequestBody TaskRequest taskRequest,
                                                  BindingResult bindingResult,
                                                  @AuthenticationPrincipal User user,
@@ -74,6 +79,8 @@ public class TaskController {
 
     @Operation(summary = "Change task status", description = "Only the creator or admin can edit a task")
     @PutMapping("/{id}/status")
+    @Transactional
+    @Retryable(retryFor = OptimisticLockException.class)
     public void changeStatus(@Valid @RequestBody TaskStatusRequest taskStatusRequest,
                              BindingResult bindingResult,
                              @AuthenticationPrincipal User user,
@@ -89,6 +96,8 @@ public class TaskController {
     }
     @Operation(summary = "Delete task", description = "Only the creator or admin can edit a task")
     @DeleteMapping("/{id}")
+    @Transactional
+    @Retryable(retryFor = OptimisticLockException.class)
     public void deleteTask(@AuthenticationPrincipal User user,
                            @PathVariable("id") @Parameter(description = "Task id") Long id) {
 

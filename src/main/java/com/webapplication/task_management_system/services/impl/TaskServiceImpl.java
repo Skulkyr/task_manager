@@ -27,11 +27,13 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
 
     @Override
+    @Transactional
     public Task saveTask(Task task) {
         return taskRepository.save(task);
     }
 
     @Override
+    @Transactional
     public void deleteTaskFromId(Long id) {
         taskRepository.deleteById(id);
     }
