@@ -5,15 +5,12 @@ import com.webapplication.task_management_system.entity.task.Task;
 import com.webapplication.task_management_system.repository.TaskRepository;
 import com.webapplication.task_management_system.services.SpecificationService;
 import com.webapplication.task_management_system.services.TaskService;
-import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +35,7 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.deleteById(id);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Task getTaskById(Long id) {return taskRepository.findById(id).orElseThrow(() -> {
         final String message = STR."Task with id=\{id} is not found!";
@@ -47,7 +44,7 @@ public class TaskServiceImpl implements TaskService {
     });
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Page<Task> getPageSortTasks(SearchDTO searchDTO) {
         var specification = specificationService.getSearchSpecifications(searchDTO);

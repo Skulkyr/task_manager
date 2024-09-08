@@ -40,6 +40,10 @@ public class SearchDTO {
     @Schema(description = "Global comparison operator, determines whether the result must match all conditions or any")
     public enum GlobalOperator {AND, OR}
 
+    /**
+     * Instantiates a new Search dto.
+     * Set default parameters for request body DTO
+     */
     public SearchDTO() {
         this.globalOperator = GlobalOperator.AND;
         this.pageNumber = 0;

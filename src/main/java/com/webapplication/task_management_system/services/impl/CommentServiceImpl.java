@@ -21,11 +21,12 @@ public class CommentServiceImpl implements CommentService {
     private final SpecificationService<Comment> specificationService;
 
     @Override
+    @Transactional
     public Comment addComment(Comment comment) {
         return commentRepository.save(comment);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Comment getComment(Long id) {
         return commentRepository.findById(id).orElseThrow(() -> {
@@ -41,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.deleteById(id);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Page<Comment> getPageSortTasks(SearchDTO searchDTO) {
 

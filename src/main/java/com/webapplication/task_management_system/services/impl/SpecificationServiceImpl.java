@@ -63,14 +63,16 @@ public class SpecificationServiceImpl<T> implements SpecificationService<T> {
                                   List<Predicate> predicates,
                                   SearchCriteriaDTO criteria) {
 
+        if(criteria.getColumn().contains("password")) return;
+
         From<T, X> from = root;
 
             if (criteria.getColumn().contains(".")) {
                 String[] path = criteria.getColumn().split("\\.");
-                criteria.setColumn(path[1]);
-                from = root.join(path[0]);
-                applyCriteria(from, criteriaBuilder, predicates, criteria);
-                return;
+                for (int i = 1; i < path.length; i++) {
+                criteria.setColumn(path[i]);
+                from = root.join(path[i-1]);
+                }
             }
 
             switch (criteria.getOperation()) {
