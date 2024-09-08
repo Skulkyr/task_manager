@@ -36,6 +36,7 @@ public interface CommentService {
      * Gets page of comment.
      *
      * @param searchDTO the these are DTOs containing search criteria and operators.
+     * @see com.webapplication.task_management_system.controller.CommentController
      */
     Page<Comment> getPageSortTasks(SearchDTO searchDTO);
 }

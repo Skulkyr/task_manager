@@ -91,7 +91,6 @@ public class ExceptionHandler {
         private int status;
         private String error;
         private String message;
-
     }
 }
 
